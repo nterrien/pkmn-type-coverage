@@ -65,8 +65,9 @@ onEvent(document.getElementById("calc-coverage"), "click", (function () {
     pkmnRes = { immune: document.getElementById("pkmn-immune"), resist: document.getElementById("pkmn-resisted"), normal: document.getElementById("pkmn-normal"), weak: document.getElementById("pkmn-weak") };
     const allowAbility = !document.querySelector("#ability").checked
     const finalEvo = document.querySelector("#final-evo").checked
-    const pokemonsFiltered = pokemons.filter(p => p.final || !finalEvo)
-    const pkmnsWithAbilitiesFilterd = pkmnsWithAbilities.filter(p => p.final || !finalEvo)
+    const allowMega = !document.querySelector("#mega").checked
+    const pokemonsFiltered = pokemons.filter(p => (p.final || !finalEvo) && (allowMega || !p.isMega))
+    const pkmnsWithAbilitiesFilterd = pkmnsWithAbilities.filter(p => (p.final || !finalEvo) && (allowMega || !p.isMega))
     let res = { immune: [], resist: [], normal: [], weak: [] }
     let averageEff = 0
     chooseSubSetOptimized(types, allowAbility, pokemonsFiltered, pkmnsWithAbilitiesFilterd)
