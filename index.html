@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<meta charset="utf-8">
+	<title>Pokémon Type Coverage calculator</title>
+
+	<link rel="stylesheet" href="main.css">
+
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta property="og:title" content="Pokémon Type Coverage calculator">
+
+	<script defer="defer" src="./data/pokemon.js"></script>
+	<script defer="defer" src="./data/type-chart.js"></script>
+	<script defer="defer" src="./data/abilities.js"></script>
+	<script defer="defer" src="main.js"></script>
+</head>
+
+<body>
+	<main class="grid-container">
+		<h1 class="text-center">Pokémon attack type coverage</h1>
+
+		<div class="explainations">
+			This tool, inspired by this <a href="https://pokemondb.net/tools/type-coverage" target="_blank">Pokémondb
+				tool</a>, lets you select types corresponding to the attacking moves of a Pokémon.
+			It then tells you how effective those types are on every Pokémon.
+			You can also check defensive type coverage
+			<a href="https://nterrien.github.io/pkmn-teambuilder/" target="_blank">with this teambuilder</a>.
+			If abilities aren't ignored, a Pokémon with multiple abilities, including one that grants immunity, can
+			count as 0.5 in two different categories or 0.33 in three different categories.
+			"Fully Evolved Only" allows to ignore Pokémon that aren't fully evolved.
+			"Find best combos of x types" can be used to find types combo with the best multiplier on average, the less
+			resistance or the most super efficient. If blank it is not used.
+		</div>
+
+		<div class="type-select"></div>
+		<p class="text-center">
+			<label><input type="checkbox" name="ability" id="ability">&nbsp; Ignore abilities</label>
+			<label><input type="checkbox" name="final-evo" id="final-evo">&nbsp; Fully Evolved Only</label>
+		</p>
+		<p class="text-center">
+			<label>Find best combos of x types: <input id="nbcombo" type="number" min="0" max="18"></label>
+			<label>Criteria
+				<select id="criteria">
+					<option value="average" selected>Average</option>
+					<option value="most-super">Most super effective</option>
+					<option value="less-res">Less resisted</option>
+				</select>
+			</label>
+		</p>
+		<p class="text-center hide" id="comboResult"></p>
+
+		<p class="infos">Select your types above then click Calculate.</p>
+
+		<p class="text-center">
+			<button id="calc-coverage">Calculate</button>
+		</p>
+
+		<div class="stat-summary">
+			<div class="stat-summary-item">
+				<span class="stat-summary-count" id="total-immune">0</span><br>
+				<div class="tooltip">No Effect<span class="tooltiptext">x0</span></div>
+			</div>
+			<div class="stat-summary-item">
+				<span class="stat-summary-count" id="total-resisted">0</span><br>
+				<div class="tooltip">Not Very Effective<span class="tooltiptext">x0.25 or x0.5</span></div>
+			</div>
+			<div class="stat-summary-item">
+				<span class="stat-summary-count" id="total-normal">0</span><br>
+				<div class="tooltip">Normal Effective<span class="tooltiptext">x1</span></div>
+			</div>
+			<div class="stat-summary-item">
+				<span class="stat-summary-count" id="total-weak">0</span><br>
+				<div class="tooltip">Super Effective<span class="tooltiptext">x2 or x4</span></div>
+			</div>
+			<div class="stat-summary-item">
+				<span class="stat-summary-count" id="average">x0</span><br>
+				<div class="tooltip">Average
+				</div>
+			</div>
+
+			<h2>No effect</h2>
+			<div id="pkmn-immune" class="infocard-list">
+				<p>None.</p>
+			</div>
+
+			<h2>Not very effective</h2>
+			<div id="pkmn-resisted" class="infocard-list">
+				<p>None.</p>
+			</div>
+
+			<h2>Normal effectiveness</h2>
+			<div id="pkmn-normal" class="infocard-list">
+				<p>None.</p>
+			</div>
+
+			<h2>Super effective</h2>
+			<div id="pkmn-weak" class="infocard-list">
+				<p>None.</p>
+			</div>
+	</main>
+</body>
+
+<footer>
+	<div>
+		Images and names of Pokémon are the property of Game Freak.
+	</div>
+	<a href="https://github.com/nterrien/pkmn-type-coverage">Project page on Github</a>
+</footer>
+
+</html>
