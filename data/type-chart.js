@@ -20,8 +20,12 @@ typeTable = {
     "Fairy": { "immunes": [], "resisted": ["Fire", "Poison", "Steel"], "effective": ["Fighting", "Dragon", "Dark"] }
 };
 
-function effectiveness(typeA, typeD) {
+function effectiveness(typeA, typeD, hasScrappy) {
     e = typeTable[typeA];
+    // Special for Scrappy/Mind's Eye. Could be extended if other offensives abilties change the type table 
+    if (hasScrappy && typeD == "Ghost" && (typeA == "Normal" || typeA == "Fighting")) {
+        return 1
+    }
     if (e["immunes"].includes(typeD)) {
         return 0
     } else if (e["resisted"].includes(typeD)) {

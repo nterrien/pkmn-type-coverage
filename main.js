@@ -66,16 +66,17 @@ onEvent(document.getElementById("calc-coverage"), "click", (function () {
     const allowAbility = !document.querySelector("#ability").checked
     const finalEvo = document.querySelector("#final-evo").checked
     const allowMega = !document.querySelector("#mega").checked
+    const hasScrappy = document.querySelector("#scrappy").checked
     const pokemonsFiltered = pokemons.filter(p => (p.final || !finalEvo) && (allowMega || !p.isMega))
     const pkmnsWithAbilitiesFilterd = pkmnsWithAbilities.filter(p => (p.final || !finalEvo) && (allowMega || !p.isMega))
     let res = { immune: [], resist: [], normal: [], weak: [] }
     let averageEff = 0
-    chooseSubSetOptimized(types, allowAbility, pokemonsFiltered, pkmnsWithAbilitiesFilterd)
+    chooseSubSetOptimized(types, allowAbility, pokemonsFiltered, pkmnsWithAbilitiesFilterd, hasScrappy)
     setTimeout((function () {
         if (types.length == 0) {
             infos.textContent = "You must select at least 1 type!"
         } else {
-            averageEff = calculateDamages(res, types, allowAbility, pokemonsFiltered, pkmnsWithAbilitiesFilterd)
+            averageEff = calculateDamages(res, types, allowAbility, pokemonsFiltered, pkmnsWithAbilitiesFilterd, hasScrappy)
             resetInfos()
         }
         for (let r of Object.keys(res)) {
@@ -102,22 +103,22 @@ onEvent(document.getElementById("calc-coverage"), "click", (function () {
     }), 10)
 }))
 
-function damageMultiplierOnePokemon(pkmn, att) {
+function damageMultiplierOnePokemon(pkmn, att, hasScrappy) {
     let ability = 1
     if (pkmn["typeMultiplier"] && pkmn["typeMultiplier"][att] != undefined) {
         ability = pkmn["typeMultiplier"][att]
     }
-    damage = ability * pkmn.types.map(def => effectiveness(att, def)).reduce((x, y) => x * y, 1)
+    damage = ability * pkmn.types.map(def => effectiveness(att, def, hasScrappy)).reduce((x, y) => x * y, 1)
     if (pkmn["typeMultiplier"] && pkmn["typeMultiplier"]["special"]) {
         damage = pkmn["typeMultiplier"]["special"](damage)
     }
     return damage
 }
 
-function calculateDamages(res, types, allowAbility, pkmns, pkmnsWithAbilities) {
+function calculateDamages(res, types, allowAbility, pkmns, pkmnsWithAbilities, hasScrappy) {
     averageEff = 0;
     for (let pkmn of allowAbility ? pkmnsWithAbilities : pkmns) {
-        finalEff = Math.max(...types.map(att => damageMultiplierOnePokemon(pkmn, att)))
+        finalEff = Math.max(...types.map(att => damageMultiplierOnePokemon(pkmn, att, hasScrappy)))
         averageEff += (pkmn.count ?? 1) * finalEff / pkmns.length
         if (res) {
             if (finalEff == 0) {
@@ -134,7 +135,7 @@ function calculateDamages(res, types, allowAbility, pkmns, pkmnsWithAbilities) {
     return averageEff
 }
 
-function chooseSubSetOptimized(types, allowAbility, pkmns, pkmnsWithAbilities) {
+function chooseSubSetOptimized(types, allowAbility, pkmns, pkmnsWithAbilities, hasScrappy) {
     let nbCombo = document.getElementById("nbcombo").value
     if (nbCombo <= 0) {
         document.getElementById("nbcombo").value = null
@@ -158,7 +159,7 @@ function chooseSubSetOptimized(types, allowAbility, pkmns, pkmnsWithAbilities) {
             let result = []
             for (let typesCombo of typesCombinaisons) {
                 let res = { immune: [], resist: [], normal: [], weak: [] }
-                const avg = calculateDamages(res, typesCombo, allowAbility, pkmns, pkmnsWithAbilities)
+                const avg = calculateDamages(res, typesCombo, allowAbility, pkmns, pkmnsWithAbilities, hasScrappy)
                 result.push({
                     types: typesCombo,
                     avg: avg,
