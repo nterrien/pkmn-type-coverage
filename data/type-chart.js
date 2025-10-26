@@ -20,10 +20,16 @@ typeTable = {
     "Fairy": { "immunes": [], "resisted": ["Fire", "Poison", "Steel"], "effective": ["Fighting", "Dragon", "Dark"] }
 };
 
-function effectiveness(typeA, typeD, hasScrappy) {
+function effectiveness(typeA, typeD, special) {
     e = typeTable[typeA];
-    // Special for Scrappy/Mind's Eye. Could be extended if other offensives abilties change the type table 
-    if (hasScrappy && typeD == "Ghost" && (typeA == "Normal" || typeA == "Fighting")) {
+    // Special for Scrappy, FreezeDry or grounded pokemon.
+    if (special["scrappy"] && typeD == "Ghost" && (typeA == "Normal" || typeA == "Fighting")) {
+        return 1
+    }
+    if (special["freezedry"] && typeD == "Water" && typeA == "Ice") {
+        return 2
+    }
+    if (special["grounded"] && typeD == "Flying" && typeA == "Ground") {
         return 1
     }
     if (e["immunes"].includes(typeD)) {
