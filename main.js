@@ -66,7 +66,7 @@ onEvent(document.getElementById("calc-coverage"), "click", (function () {
     const allowAbility = !document.querySelector("#ability").checked
     const finalEvo = document.querySelector("#final-evo").checked
     const allowMega = !document.querySelector("#mega").checked
-    const specialRules = { "scrappy": document.querySelector("#scrappy").checked, "freezedry": document.querySelector("#freezedry").checked, "grounded": document.querySelector("#grounded").checked }
+    const specialRules = { "scrappy": document.querySelector("#scrappy").checked, "tintedlens": document.querySelector("#tintedlens").checked, "freezedry": document.querySelector("#freezedry").checked, "grounded": document.querySelector("#grounded").checked }
     const pokemonsFiltered = pokemons.filter(p => (p.final || !finalEvo) && (allowMega || !p.isMega))
     const pkmnsWithAbilitiesFilterd = pkmnsWithAbilities.filter(p => (p.final || !finalEvo) && (allowMega || !p.isMega))
     let res = { immune: [], resist: [], normal: [], weak: [] }
@@ -112,7 +112,11 @@ function damageMultiplierOnePokemon(pkmn, att, specialRules) {
     if (specialRules["grounded"] && pkmn.abilities.includes("Levitate") && att == "Ground") {
         ability = 1
     }
-    damage = ability * pkmn.types.map(def => effectiveness(att, def, specialRules)).reduce((x, y) => x * y, 1)
+    typeEffectivness = pkmn.types.map(def => effectiveness(att, def, specialRules)).reduce((x, y) => x * y, 1)
+    if (specialRules["tintedlens"] && typeEffectivness < 1) {
+        typeEffectivness *= 2
+    }
+    damage = ability * typeEffectivness
     if (pkmn["typeMultiplier"] && pkmn["typeMultiplier"]["specialRules"]) {
         damage = pkmn["typeMultiplier"]["specialRules"](damage)
     }
@@ -160,11 +164,11 @@ function chooseSubSetOptimized(types, allowAbility, pkmns, pkmnsWithAbilities, s
     setTimeout((function () {
         if (nbCombo) {
             const typesCombinaisons = findCombinaisons(types, nbCombo)
-            let result = []
+            let typesComboValues = []
             for (let typesCombo of typesCombinaisons) {
                 let res = { immune: [], resist: [], normal: [], weak: [] }
                 const avg = calculateDamages(res, typesCombo, allowAbility, pkmns, pkmnsWithAbilities, specialRules)
-                result.push({
+                typesComboValues.push({
                     types: typesCombo,
                     avg: avg,
                     weak: res.weak.map(r => r.count ?? 1).reduce((x, y) => x + y, 0),
@@ -174,20 +178,21 @@ function chooseSubSetOptimized(types, allowAbility, pkmns, pkmnsWithAbilities, s
             switch (criteria) {
                 case "average":
                     // Sort primary: avg, secondary: less res, tertiary: most super
-                    result.sort((x, y) => y.avg == x.avg ? (y.resist == x.resist ? y.weak - x.weak : x.resist - y.resist) : y.avg - x.avg)
-                    result = result.map(x => { return { types: x.types, value: "x" + x.avg.toFixed(3) } })
+                    typesComboValues.sort((x, y) => y.avg == x.avg ? (y.resist == x.resist ? y.weak - x.weak : x.resist - y.resist) : y.avg - x.avg)
+                    result = typesComboValues.map(x => { return { types: x.types, value: "x" + x.avg.toFixed(3) } })
                     break;
                 case "most-super":
                     // Sort primary: most super, secondary: avg, tertiary: less res
-                    result.sort((x, y) => y.weak == x.weak ? (y.avg == x.avg ? x.resist - y.resist : y.avg - x.avg) : y.weak - x.weak)
-                    result = result.map(x => { return { types: x.types, value: roundDecimal(x.weak, 2) } })
+                    typesComboValues.sort((x, y) => y.weak == x.weak ? (y.avg == x.avg ? x.resist - y.resist : y.avg - x.avg) : y.weak - x.weak)
+                    result = typesComboValues.map(x => { return { types: x.types, value: roundDecimal(x.weak, 2) } })
                     break;
                 case "less-res":
                     // Sort primary: less res, secondary: avg, tertiary: most super
-                    result.sort((x, y) => y.resist == x.resist ? (y.avg == x.avg ? y.weak - x.weak : y.avg - x.avg) : x.resist - y.resist)
-                    result = result.map(x => { return { types: x.types, value: roundDecimal(x.resist, 2) } })
+                    typesComboValues.sort((x, y) => y.resist == x.resist ? (y.avg == x.avg ? y.weak - x.weak : y.avg - x.avg) : x.resist - y.resist)
+                    result = typesComboValues.map(x => { return { types: x.types, value: roundDecimal(x.resist, 2) } })
                     break;
             }
+            console.log("Full list of types combo: ", typesComboValues)
             listRes = result.map(x => "<div>" + x.types.map(t => typeIcon(t)).join(" ") + ": " + x.value + "</div>").slice(0, 10)
             document.getElementById("comboResult").innerHTML = listRes.join("")
             document.getElementById("comboResult").classList.remove("hide")
