@@ -32,6 +32,9 @@ function effectiveness(typeA, typeD, special) {
     if (special["grounded"] && typeD == "Flying" && typeA == "Ground") {
         return 1
     }
+    if (typeA == "Flying_Press") {
+        return effectiveness("Fighting", typeD, special) * effectiveness("Flying", typeD, special)
+    }
     if (e["immunes"].includes(typeD)) {
         return 0
     } else if (e["resisted"].includes(typeD)) {

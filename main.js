@@ -38,15 +38,18 @@ pokemons.forEach(pkmn => {
 
 // Fill the type lists
 typeListDiv = document.querySelector(".type-select")
-typeListDiv.innerHTML = Object.keys(typeTable).map(t => '<span class="type-button" data-typeid="' + t + '">' + typeIcon(t) + '</span>').reduce((x, y) => x + y, "")
+typeListDiv.innerHTML = Object.keys(typeTable).map(t => typeButton(t)).reduce((x, y) => x + y, "")
+
+function typeButton(t, larger = false) {
+    return '<span class="type-button" data-typeid="' + t + '">' + typeIcon(t, larger) + '</span>'
+}
+function typeIcon(t, larger = false) {
+    return '<span class="' + (larger ? 'larger-type-icon' : '') + ' type-icon type-' + t.toLowerCase() + '">' + t.replace("_", " ") + '</span>'
+}
 
 for (let i = 1; i <= 2; i++) {
     forceType = document.getElementById("force-type-" + i)
     forceType.innerHTML = '<option value="None" selected></option>' + Object.keys(typeTable).map(t => '<option value="' + t + '">' + t + '</option>').reduce((x, y) => x + y, "")
-}
-
-function typeIcon(t) {
-    return '<span class="type-icon type-' + t.toLowerCase() + '">' + t + '</span>'
 }
 
 // Info about error or loading
@@ -59,6 +62,32 @@ onDelegatedEvent(document.querySelector(".type-select"), ".type-button", "click"
 function formatName(pkmn) {
     ability = pkmn.count && pkmn.count != 1 ? " (" + pkmn.abilities + ")" : ""
     return '<div class="pkmn-name tooltip"><img width="48" height="48" alt="' + pkmn.name + ' sprite" title="' + pkmn.name + '" loading="lazy" src="./sprites/' + pkmn.name + '.png"><br>' + pkmn.name + ability + '<span class="tooltiptext">' + pkmn.types.reduce((x, y) => x + "/" + y) + '</span></div>'
+}
+
+// Click on Flying Press checkbox
+if (document.querySelector("#flying_press").checked) {
+    addType("Flying_Press")
+}
+onEvent(document.getElementById("flying_press"), "change", (function () {
+    if (document.querySelector("#flying_press").checked) {
+        addType("Flying_Press")
+    } else {
+        removeType("Flying_Press")
+    }
+}))
+function addType(type) {
+    typeListDiv.innerHTML += typeButton(type, true)
+    for (let i = 1; i <= 2; i++) {
+        forceType = document.getElementById("force-type-" + i)
+        forceType.innerHTML += '<option value="' + type + '">' + type.replace("_", " ") + '</option>'
+    }
+}
+function removeType(type) {
+    Array.from(typeListDiv.children).filter(d => d.dataset.typeid == type).forEach(d => d.remove())
+    for (let i = 1; i <= 2; i++) {
+        forceType = document.getElementById("force-type-" + i)
+        Array.from(forceType.children).filter(d => d.value == type).forEach(d => d.remove())
+    }
 }
 
 // Click on Calculate button
@@ -212,10 +241,11 @@ function chooseSubSetOptimized(types, allowAbility, pkmns, pkmnsWithAbilities, s
                     break;
             }
             console.log("Full list of types combo: ", typesComboValues)
+            hasLargerTypeIcon = document.querySelector("#flying_press").checked
             listRes = result.slice(0, 10).forEach(x => {
                 div = document.createElement("div")
                 div.addEventListener("click", () => selectTypeList(x.types))
-                div.innerHTML = "<div style=\"cursor: pointer\" class=\"tooltip\">" + x.types.map(t => typeIcon(t)).join(" ") + "<span class=\"tooltiptext\">Click to select this type combo<span></div>: <div class=\"tooltip\">" + x.value + (criteria != "average" ? "<span class=\"tooltiptext\">" + roundDecimal(100 * x.value / pkmns.length, 2) + "%</span>" : "") + "</div>"
+                div.innerHTML = "<div style=\"cursor: pointer\" class=\"tooltip\">" + x.types.map(t => typeIcon(t, hasLargerTypeIcon)).join(" ") + "<span class=\"tooltiptext\">Click to select this type combo<span></div>: <div class=\"tooltip\">" + x.value + (criteria != "average" ? "<span class=\"tooltiptext\">" + roundDecimal(100 * x.value / pkmns.length, 2) + "%</span>" : "") + "</div>"
                 document.getElementById("comboResult").appendChild(div)
             })
             document.getElementById("comboResult").classList.remove("hide")
