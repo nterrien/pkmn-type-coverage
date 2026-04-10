@@ -100,7 +100,7 @@ onEvent(document.getElementById("calc-coverage"), "click", (function () {
     const allowAbility = !document.querySelector("#ability").checked
     const finalEvo = document.querySelector("#final-evo").checked
     const allowMega = !document.querySelector("#mega").checked
-    const specialRules = { "scrappy": document.querySelector("#scrappy").checked, "tintedlens": document.querySelector("#tintedlens").checked, "freezedry": document.querySelector("#freezedry").checked, "grounded": document.querySelector("#grounded").checked }
+    const specialRules = { "scrappy": document.querySelector("#scrappy").checked, "tintedlens": document.querySelector("#tintedlens").checked, "freezedry": document.querySelector("#freezedry").checked, "grounded": document.querySelector("#grounded").checked, "nihillight": document.querySelector("#nihillight").checked }
     const pokemonsFiltered = pokemons.filter(p => (p.final || !finalEvo) && (allowMega || !p.isMega))
     const pkmnsWithAbilitiesFilterd = pkmnsWithAbilities.filter(p => (p.final || !finalEvo) && (allowMega || !p.isMega))
     let res = { immune: [], resist: [], normal: [], weak: [] }

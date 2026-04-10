@@ -22,12 +22,15 @@ typeTable = {
 
 function effectiveness(typeA, typeD, special) {
     e = typeTable[typeA];
-    // Special for Scrappy, FreezeDry or grounded pokemon.
+    // Special for Scrappy, FreezeDry, Nihil Light or grounded pokemon.
     if (special["scrappy"] && typeD == "Ghost" && (typeA == "Normal" || typeA == "Fighting")) {
         return 1
     }
     if (special["freezedry"] && typeD == "Water" && typeA == "Ice") {
         return 2
+    }
+    if (special["nihillight"] && typeD == "Fairy" && typeA == "Dragon") {
+        return 1
     }
     if (special["grounded"] && typeD == "Flying" && typeA == "Ground") {
         return 1
