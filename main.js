@@ -151,8 +151,8 @@ function damageMultiplierOnePokemon(pkmn, att, specialRules) {
         typeEffectivness *= 2
     }
     damage = ability * typeEffectivness
-    if (pkmn["typeMultiplier"] && pkmn["typeMultiplier"]["specialRules"]) {
-        damage = pkmn["typeMultiplier"]["specialRules"](damage)
+    if (pkmn["typeMultiplier"] && pkmn["typeMultiplier"]["special"]) {
+        damage = pkmn["typeMultiplier"]["special"](damage)
     }
     return damage
 }
