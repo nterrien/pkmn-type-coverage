@@ -21,12 +21,31 @@ abilities = {
     "Prism Armor": { "special": reduceIfEffective },
     "Wonder Guard": { "special": wonderGuard },
 }
+// Abilities that summons weather => damage multiplier of the weather
+weathers = {
+    "Drought": { "Fire": 1.5, "Water": 0.5 },
+    "Orichalcum Pulse": { "Fire": 1.5, "Water": 0.5 },
+    "Desolate Land": { "Fire": 1.5, "Water": 0 },
+    "Drizzle": { "Water": 1.5, "Fire": 0.5 },
+    "Primordial Sea": { "Water": 1.5, "Fire": 0 },
+    "Delta Stream": { "special": deltaStream },
+}
 
 function reduceIfEffective(mult) {
-    return mult < 2 ? mult : 3 / 4 * mult
+    return mult < 2 ? 1 : 3 / 4
 }
 
 function wonderGuard(mult) {
-    return mult < 2 ? 0 : mult
+    return mult < 2 ? 0 : 1
+}
+
+function deltaStream(atq, defs) {
+    if (defs.includes("Flying")) {
+        superOnFlying = Object.keys(typeTable).filter(t => typeTable[t].effective.includes("Flying"))
+        if (superOnFlying.includes(atq)) {
+            return 0.5
+        }
+    }
+    return 1
 }
 
