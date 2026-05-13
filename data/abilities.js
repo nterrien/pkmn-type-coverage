@@ -25,8 +25,10 @@ abilities = {
 weathers = {
     "Drought": { "Fire": 1.5, "Water": 0.5 },
     "Orichalcum Pulse": { "Fire": 1.5, "Water": 0.5 },
+    "Forecast (Sun)": { "Fire": 1.5, "Water": 0.5 }, // Because castform can only have this form when there is this weather
     "Desolate Land": { "Fire": 1.5, "Water": 0 },
     "Drizzle": { "Water": 1.5, "Fire": 0.5 },
+    "Forecast (Rain)": { "Water": 1.5, "Fire": 0.5 }, // Because castform can only have this form when there is this weather
     "Primordial Sea": { "Water": 1.5, "Fire": 0 },
     "Delta Stream": { "special": deltaStream },
 }
