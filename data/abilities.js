@@ -5,6 +5,7 @@ abilities = {
     "Fluffy": { "Fire": 2 },
     "Heatproof": { "Fire": 0.5 },
     "Levitate": { "Ground": 0 },
+    "Eelevate": { "Ground": 0 },
     "Lightning Rod": { "Electric": 0 },
     "Lightningrod": { "Electric": 0 },
     "Motor Drive": { "Electric": 0 },
